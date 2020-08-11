@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  Route,
-  Router,
-  HashHistory,
-  Link,
-  HashRouter,
-  Switch,
-} from 'react-router-dom';
-import logo from './logo.svg';
-import './App.css';
-
+import {Route, Switch, BrowserRouter} from 'react-router-dom';
+import './App.scss';
+//引入组件
+import Home from './views/home';
+import About from './views/about';
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -17,12 +11,15 @@ class App extends React.Component {
   }
   render() {
     return (
-      <HashRouter>
-        <Switch>
-          <Route component={login} exact path="/login"></Route>
-          <Route component={lofo} path="/info"></Route>
-        </Switch>
-      </HashRouter>
+      <div>
+        <h1>335215</h1>
+        <BrowserRouter>
+          <Switch>
+            <Route component={Home} exact path="/"></Route>
+            <Route component={About} path="/about"></Route>
+          </Switch>
+        </BrowserRouter>
+      </div>
     );
   }
 }
