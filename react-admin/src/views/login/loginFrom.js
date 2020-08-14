@@ -48,24 +48,25 @@ class LoginFrom extends Component {
                 // {min:6,message:"密码格式不正确"},{
                 // max:20,message:"密码不能大于20位"
                 // },{
-                //   type:"password"
+                //   pattern:/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/,message:"请输入6到20位的密码"
                 // }
-                ({getFieldValue}) => ({//监听 密码框输入的值es6 结构
+                ({getFieldValue}) => ({
+                  //监听 密码框输入的值es6 结构
                   validator(rule, value) {
-                    console.log(getFieldValue('password'))
-                    if (!value || getFieldValue('password') === value) {
+                    console.log(getFieldValue('password'));
+
+                    if (value.length < 6) {
+                      return Promise.reject('密码格式不正确');
+                    } else {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      'The two passwords that you entered do not match!'
-                    );
                   },
                 }),
               ]}
             >
               <Input
                 prefix={<UnlockOutlined className="site-form-item-icon" />}
-                placeholder="Password"
+                placeholder="字母+数字,大于6位，小于20位"
               />
             </Form.Item>
             <Form.Item
