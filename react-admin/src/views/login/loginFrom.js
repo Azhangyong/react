@@ -1,7 +1,11 @@
 import React, {Component, Fragment} from 'react';
-import './index.scss'; //css
+
 import {Form, Input, Button, Row, Col} from 'antd'; //antd
 import {UserOutlined, UnlockOutlined} from '@ant-design/icons';
+//公共验证
+import {validate_password} from "../../utils/validate";
+//api
+import {Login} from "../../api/account.js"
 class LoginFrom extends Component {
   constructor() {
     super();
@@ -9,6 +13,11 @@ class LoginFrom extends Component {
   }
 
   onFinish = (values) => {
+    Login().then(response=>{
+console.log(response)
+    }).catch(error=>{
+      console.log(error)
+    })
     console.log(values);
   };
   toggleFrom = () => {
@@ -27,7 +36,7 @@ class LoginFrom extends Component {
             name="normal_login"
             className="login-form"
             initialValues={{remember: true}}
-            onFinish={() => this.onFinish}
+            onFinish={this.onFinish}
           >
             <Form.Item
               name="username"
@@ -45,23 +54,23 @@ class LoginFrom extends Component {
               name="password"
               rules={[
                 {required: true, message: '密码不能为空!'},
-                // {min:6,message:"密码格式不正确"},{
-                // max:20,message:"密码不能大于20位"
-                // },{
-                //   pattern:/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/,message:"请输入6到20位的密码"
-                // }
-                ({getFieldValue}) => ({
-                  //监听 密码框输入的值es6 结构
-                  validator(rule, value) {
-                    console.log(getFieldValue('password'));
+                {min:6,message:"密码格式不正确"},{
+                max:20,message:"密码不能大于20位"
+                },{
+                  pattern:validate_password,message:"请输入6到20位的数字加子母密码"
+                },
+                // ({getFieldValue}) => ({
+                //   //监听 密码框输入的值es6 结构
+                //   validator(rule, value) {
+                //     console.log(getFieldValue('password'));
 
-                    if (value.length < 6) {
-                      return Promise.reject('密码格式不正确');
-                    } else {
-                      return Promise.resolve();
-                    }
-                  },
-                }),
+                //     if (value.length < 6) {
+                //       return Promise.reject('密码格式不正确');
+                //     } else {
+                //       return Promise.resolve();
+                //     }
+                //   },
+                // }),
               ]}
             >
               <Input
@@ -71,7 +80,10 @@ class LoginFrom extends Component {
             </Form.Item>
             <Form.Item
               name="Code"
-              rules={[{required: true, message: 'Please input your Username!'}]}
+              rules={[
+                {required: true, message: '验证码不能为空!'},
+                {len:6,message:"请输入6位验证码"}
+              ]}
             >
               <Row gutter={13}>
                 <Col span={15}>
