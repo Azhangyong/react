@@ -1,7 +1,8 @@
 import axios from "axios"
 //拦截器 第一步，创建实例
+
 const service = axios.create({
-    baseURL: 'devApi',
+    baseURL:process.env.REACT_APP_API,
     timeout: 5000,
 });
 //第二步，请求拦截

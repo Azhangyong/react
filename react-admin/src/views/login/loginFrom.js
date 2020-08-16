@@ -13,6 +13,7 @@ class LoginFrom extends Component {
   }
 
   onFinish = (values) => {
+    console.log(process.env.NODE_ENV)
     Login().then(response=>{
 console.log(response)
     }).catch(error=>{
