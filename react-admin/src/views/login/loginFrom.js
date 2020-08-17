@@ -1,11 +1,13 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 
-import {Form, Input, Button, Row, Col, message} from 'antd'; //antd
-import {UserOutlined, UnlockOutlined} from '@ant-design/icons';
+import { Form, Input, Button, Row, Col } from 'antd'; //antd
+import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 //公共验证
-import {validate_password, validate_email} from '../../utils/validate';
+import { validate_password, validate_email } from '../../utils/validate';
 //api
-import {Login, GetCode} from '../../api/account.js';
+import { Login } from '../../api/account.js';
+//组件
+import Code from "../../components/code/index"
 class LoginFrom extends Component {
   constructor() {
     super();
@@ -29,69 +31,8 @@ class LoginFrom extends Component {
       });
     console.log(values);
   };
-  //获取验证码
-  getCode = () => {
-    if (!this.state.username) {
-      message.warning('用户名不能为空', 1);
-      return false;
-    }
 
-    const requestData = {
-      username: this.state.username,
-      module: 'login',
-    };
-    if (!this.state.flag) {
-      return false;
-    }
-    this.setState({
-      code_button_loading: true,
-      code_button_disabled: true,
-      code_button_text: '发送中',
-      flag: false
-    });
-    GetCode(requestData)
-      .then((response) => {
-        //执行倒计时
-        this.countDown();
-      })
-      .catch((error) => {
-        this.setState({
-          code_button_loading: false,
-          code_button_text: '重新获取',
-          code_button_disabled: false,
-          flag: true,
-        });
-      });
-  };
-  /**
-   * 倒计时
-   */
-  countDown = () => {
-    // 定时器
-    let timer = null;
-    //计时器时间
-    let sec = 60;
-    //修改状态
-    this.setState({
-      code_button_loading: false,
-      code_button_text: `${sec}S`,
-    });
-    timer = setInterval(() => {
-      sec--;
-      if (sec <= 0) {
-        this.setState({
-          code_button_disabled: false,
-          code_button_text: '重新获取',
-          flag: true,
-        });
-        clearInterval(timer);
-        return false;
-      }
-      this.setState({
-        code_button_text: `${sec}S`,
-      });
-    }, 1000);
-  };
+
   //input输入数据处理
   inputChange = (e) => {
     //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
@@ -110,9 +51,6 @@ class LoginFrom extends Component {
   render() {
     const {
       username,
-      code_button_disabled,
-      code_button_loading,
-      code_button_text,
     } = this.state;
     let _this = this;
     return (
@@ -125,15 +63,15 @@ class LoginFrom extends Component {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={{remember: true}}
+            initialValues={{ remember: true }}
             onFinish={this.onFinish}
           >
             <Form.Item
               name="username"
               rules={[
-                {required: true, message: '邮箱不能为空!'},
+                { required: true, message: '邮箱不能为空!' },
                 // {type: 'email', message: '邮箱格式不正确'},
-                ({getFieldValue}) => ({
+                ({ getFieldValue }) => ({
                   //监听 密码框输入的值es6 结构
                   validator(rule, value) {
                     if (validate_email(value)) {
@@ -161,8 +99,8 @@ class LoginFrom extends Component {
             <Form.Item
               name="password"
               rules={[
-                {required: true, message: '密码不能为空!'},
-                {min: 6, message: '密码格式不正确'},
+                { required: true, message: '密码不能为空!' },
+                { min: 6, message: '密码格式不正确' },
                 {
                   max: 20,
                   message: '密码不能大于20位',
@@ -194,8 +132,8 @@ class LoginFrom extends Component {
             <Form.Item
               name="Code"
               rules={[
-                {required: true, message: '验证码不能为空!'},
-                {len: 6, message: '请输入6位验证码'},
+                { required: true, message: '验证码不能为空!' },
+                { len: 6, message: '请输入6位验证码' },
               ]}
             >
               <Row gutter={13}>
@@ -206,15 +144,8 @@ class LoginFrom extends Component {
                   />
                 </Col>
                 <Col span={9}>
-                  <Button
-                    type="danger"
-                    block
-                    onClick={this.getCode}
-                    disabled={code_button_disabled}
-                    loading={code_button_loading}
-                  >
-                    {code_button_text}
-                  </Button>
+                  <Code username={username}></Code>
+
                 </Col>
               </Row>
             </Form.Item>
