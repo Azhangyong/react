@@ -1,31 +1,120 @@
 import React, {Component, Fragment} from 'react';
 
-import {Form, Input, Button, Row, Col} from 'antd'; //antd
+import {Form, Input, Button, Row, Col, message} from 'antd'; //antd
 import {UserOutlined, UnlockOutlined} from '@ant-design/icons';
 //公共验证
-import {validate_password} from "../../utils/validate";
+import {validate_password, validate_email} from '../../utils/validate';
 //api
-import {Login} from "../../api/account.js"
+import {Login, GetCode} from '../../api/account.js';
 class LoginFrom extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      username: '',
+      code_button_disabled: true,
+      code_button_loading: false,
+      code_button_text: '获取验证码',
+      flag: true,
+    };
+    //react 没有数据双向绑定的概念
   }
-
+  //登录
   onFinish = (values) => {
-    console.log(process.env.NODE_ENV)
-    Login().then(response=>{
-console.log(response)
-    }).catch(error=>{
-      console.log(error)
-    })
+    Login()
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     console.log(values);
+  };
+  //获取验证码
+  getCode = () => {
+    if (!this.state.username) {
+      message.warning('用户名不能为空', 1);
+      return false;
+    }
+
+    const requestData = {
+      username: this.state.username,
+      module: 'login',
+    };
+    if (!this.state.flag) {
+      return false;
+    }
+    this.setState({
+      code_button_loading: true,
+      code_button_disabled: true,
+      code_button_text: '发送中',
+      flag: false
+    });
+    GetCode(requestData)
+      .then((response) => {
+        //执行倒计时
+        this.countDown();
+      })
+      .catch((error) => {
+        this.setState({
+          code_button_loading: false,
+          code_button_text: '重新获取',
+          code_button_disabled: false,
+          flag: true,
+        });
+      });
+  };
+  /**
+   * 倒计时
+   */
+  countDown = () => {
+    // 定时器
+    let timer = null;
+    //计时器时间
+    let sec = 60;
+    //修改状态
+    this.setState({
+      code_button_loading: false,
+      code_button_text: `${sec}S`,
+    });
+    timer = setInterval(() => {
+      sec--;
+      if (sec <= 0) {
+        this.setState({
+          code_button_disabled: false,
+          code_button_text: '重新获取',
+          flag: true,
+        });
+        clearInterval(timer);
+        return false;
+      }
+      this.setState({
+        code_button_text: `${sec}S`,
+      });
+    }, 1000);
+  };
+  //input输入数据处理
+  inputChange = (e) => {
+    //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
+    //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
+    //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
+    //e.persist()，其实就是将当前的合成事件从事件池中移除了
+    let username = e.target.value;
+    this.setState({
+      username,
+    });
   };
   toggleFrom = () => {
     //调用父级传过来的方法
     this.props.switchForm('register');
   };
   render() {
+    const {
+      username,
+      code_button_disabled,
+      code_button_loading,
+      code_button_text,
+    } = this.state;
+    let _this = this;
     return (
       <Fragment>
         <div className="from-header">
@@ -43,10 +132,28 @@ console.log(response)
               name="username"
               rules={[
                 {required: true, message: '邮箱不能为空!'},
-                {type: 'email', message: '邮箱格式不正确'},
+                // {type: 'email', message: '邮箱格式不正确'},
+                ({getFieldValue}) => ({
+                  //监听 密码框输入的值es6 结构
+                  validator(rule, value) {
+                    if (validate_email(value)) {
+                      _this.setState({
+                        code_button_disabled: false,
+                      });
+                      return Promise.resolve();
+                    } else {
+                      _this.setState({
+                        code_button_disabled: true,
+                      });
+                    }
+                    return Promise.reject('邮箱格式不正确');
+                  },
+                }),
               ]}
             >
               <Input
+                value={username}
+                onChange={this.inputChange}
                 prefix={<UserOutlined className="site-form-item-icon" />}
                 placeholder="email"
               />
@@ -55,21 +162,26 @@ console.log(response)
               name="password"
               rules={[
                 {required: true, message: '密码不能为空!'},
-                {min:6,message:"密码格式不正确"},{
-                max:20,message:"密码不能大于20位"
-                },{
-                  pattern:validate_password,message:"请输入6到20位的数字加子母密码"
+                {min: 6, message: '密码格式不正确'},
+                {
+                  max: 20,
+                  message: '密码不能大于20位',
+                },
+                {
+                  pattern: validate_password,
+                  message: '请输入6到20位的数字加子母密码',
                 },
                 // ({getFieldValue}) => ({
                 //   //监听 密码框输入的值es6 结构
                 //   validator(rule, value) {
-                //     console.log(getFieldValue('password'));
+                //     console.log(value);
 
-                //     if (value.length < 6) {
-                //       return Promise.reject('密码格式不正确');
-                //     } else {
-                //       return Promise.resolve();
-                //     }
+                //     // if (value.length < 6) {
+
+                //     // } else {
+                //     //   return Promise.resolve();
+                //     // }
+                //     return Promise.reject('密码格式不正确');
                 //   },
                 // }),
               ]}
@@ -83,7 +195,7 @@ console.log(response)
               name="Code"
               rules={[
                 {required: true, message: '验证码不能为空!'},
-                {len:6,message:"请输入6位验证码"}
+                {len: 6, message: '请输入6位验证码'},
               ]}
             >
               <Row gutter={13}>
@@ -94,8 +206,14 @@ console.log(response)
                   />
                 </Col>
                 <Col span={9}>
-                  <Button type="danger" block>
-                    获取验证码
+                  <Button
+                    type="danger"
+                    block
+                    onClick={this.getCode}
+                    disabled={code_button_disabled}
+                    loading={code_button_loading}
+                  >
+                    {code_button_text}
                   </Button>
                 </Col>
               </Row>

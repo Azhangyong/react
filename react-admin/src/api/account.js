@@ -10,3 +10,12 @@ export function Login(data){
         // params:data//type 为get
     })
 }
+//获取验证码
+export function GetCode(data){
+    return service.request({
+         url:"/getSms/",
+         method:"post",
+         data,
+         // params:data//type 为get
+     })
+ }

@@ -66,9 +66,9 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "bulid:dev":"dotenv -e .env.development react-app-rewired bulid",
-    "bulid:pro":"dotenv -e .env.production react-app-rewired bulid",
-    "bulid:test":"dotenv -e .env.test react-app-rewired bulid"
+    "bulid:dev": "dotenv -e .env.development react-app-rewired bulid",
+    "bulid:pro": "dotenv -e .env.production react-app-rewired bulid",
+    "bulid:test": "dotenv -e .env.test react-app-rewired bulid"
   },
   "eslintConfig": {
     "extends": "react-app"
