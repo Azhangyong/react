@@ -14,7 +14,8 @@ class Code extends Component {
             button_text: "获取验证码",
             button_disabled: false,
             button_loading: false,
-            flag:true
+            flag:true,
+            module:props.module
         }
     }
     //this.props.username//每次都会获取新的
@@ -40,7 +41,7 @@ class Code extends Component {
         }
         const requestData = {
             username,
-            module: 'login',
+            module: this.state.module,
         };
         if (!this.state.flag) {
             return false;
@@ -53,6 +54,7 @@ class Code extends Component {
         });
         GetCode(requestData)
             .then((response) => {
+                message.success("获取成功,验证码:"+response.data.message)
                 //执行倒计时
                 this.countDown();
             })

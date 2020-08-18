@@ -13,10 +13,7 @@ class LoginFrom extends Component {
     super();
     this.state = {
       username: '',
-      code_button_disabled: true,
-      code_button_loading: false,
-      code_button_text: '获取验证码',
-      flag: true,
+      module: "login"
     };
     //react 没有数据双向绑定的概念
   }
@@ -51,6 +48,7 @@ class LoginFrom extends Component {
   render() {
     const {
       username,
+      module
     } = this.state;
     let _this = this;
     return (
@@ -125,6 +123,7 @@ class LoginFrom extends Component {
               ]}
             >
               <Input
+                type="password"
                 prefix={<UnlockOutlined className="site-form-item-icon" />}
                 placeholder="字母+数字,大于6位，小于20位"
               />
@@ -132,8 +131,7 @@ class LoginFrom extends Component {
             <Form.Item
               name="Code"
               rules={[
-                { required: true, message: '验证码不能为空!' },
-                { len: 6, message: '请输入6位验证码' },
+                { required: true, message: '请输入6位验证码!', len: 6 }
               ]}
             >
               <Row gutter={13}>
@@ -144,7 +142,7 @@ class LoginFrom extends Component {
                   />
                 </Col>
                 <Col span={9}>
-                  <Code username={username}></Code>
+                  <Code username={username} module={module}></Code>
 
                 </Col>
               </Row>

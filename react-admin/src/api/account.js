@@ -19,3 +19,12 @@ export function GetCode(data){
          // params:data//type 为get
      })
  }
+ //注册
+export function Register(data){
+    return service.request({
+         url:"/register/",
+         method:"post",
+         data,
+         // params:data//type 为get
+     })
+ }
