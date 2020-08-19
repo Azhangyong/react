@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import './index.scss'; //css
-import { Form, Input, Button, Row, Col } from 'antd'; //antd
+import { Form, Input, Button, Row, Col, message } from 'antd'; //antd
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 //公共验证
 import { validate_ps } from '../../utils/validate';
@@ -8,6 +8,8 @@ import { validate_ps } from '../../utils/validate';
 import Code from "../../components/code/index"
 //接口 
 import { Register } from "../../api/account"
+//密码加密
+import CryptoJs from "crypto-js"
 class RegisterFrom extends Component {
   constructor() {
     super();
@@ -15,18 +17,22 @@ class RegisterFrom extends Component {
       username: "",
       passwoed: "",
       code: "",
-      module: "register"
+      module: "register",
+     
     };
   }
   onFinish = (values) => {
     const requestData = {
       username: this.state.username,
-      password: this.state.passwoed,
+      password: CryptoJs.MD5(this.state.password).toString(),
       code: this.state.code
     }
-    return console.log(requestData)
     Register(requestData).then(response => {
-
+      const data=response.data
+      message.success(data.message)
+      if(data.resCode===0){
+        this.toggleFrom()
+      }
     }).catch(error => {
 
     })
@@ -47,18 +53,18 @@ class RegisterFrom extends Component {
     //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
     //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
     //e.persist()，其实就是将当前的合成事件从事件池中移除了
-    let username = e.target.value;
+    let password = e.target.value;
     this.setState({
-      username,
+      password,
     });
   }; inputChangeCode = (e) => {
     //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
     //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
     //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
     //e.persist()，其实就是将当前的合成事件从事件池中移除了
-    let username = e.target.value;
+    let code = e.target.value;
     this.setState({
-      username,
+      code,
     });
   };
   toggleFrom = () => {
@@ -78,7 +84,7 @@ class RegisterFrom extends Component {
             name="normal_login"
             className="login-form"
             initialValues={{ remember: true }}
-            onFinish={() => this.onFinish}
+            onFinish={this.onFinish}
           >
             <Form.Item
               name="username"

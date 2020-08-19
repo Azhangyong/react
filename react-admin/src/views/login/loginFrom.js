@@ -8,30 +8,44 @@ import { validate_password, validate_email } from '../../utils/validate';
 import { Login } from '../../api/account.js';
 //组件
 import Code from "../../components/code/index"
+//密码加密
+import CryptoJs from "crypto-js"
 class LoginFrom extends Component {
   constructor() {
     super();
     this.state = {
       username: '',
-      module: "login"
+      passwoed: "",
+      code: "",
+      module: "login",
+      loading:false
     };
     //react 没有数据双向绑定的概念
   }
   //登录
   onFinish = (values) => {
-    Login()
+    const requestData={
+      username:this.state.username,
+      password:CryptoJs.MD5(this.state.password).toString(),
+      code:this.state.code
+    }
+    this.setState({
+      loading:true
+    })
+    Login(requestData)
       .then((response) => {
         console.log(response);
       })
       .catch((error) => {
-        console.log(error);
+        this.setState({
+          loading:false
+        })
       });
     console.log(values);
   };
 
-
   //input输入数据处理
-  inputChange = (e) => {
+  inputChangeUsername = (e) => {
     //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
     //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
     //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
@@ -41,6 +55,25 @@ class LoginFrom extends Component {
       username,
     });
   };
+  inputChangePassword = (e) => {
+    //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
+    //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
+    //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
+    //e.persist()，其实就是将当前的合成事件从事件池中移除了
+    let password = e.target.value;
+    this.setState({
+      password,
+    });
+  }; inputChangeCode = (e) => {
+    //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
+    //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
+    //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
+    //e.persist()，其实就是将当前的合成事件从事件池中移除了
+    let code = e.target.value;
+    this.setState({
+      code,
+    });
+  };
   toggleFrom = () => {
     //调用父级传过来的方法
     this.props.switchForm('register');
@@ -48,7 +81,8 @@ class LoginFrom extends Component {
   render() {
     const {
       username,
-      module
+      module,
+      loading
     } = this.state;
     let _this = this;
     return (
@@ -89,7 +123,7 @@ class LoginFrom extends Component {
             >
               <Input
                 value={username}
-                onChange={this.inputChange}
+                onChange={this.inputChangeUsername}
                 prefix={<UserOutlined className="site-form-item-icon" />}
                 placeholder="email"
               />
@@ -123,6 +157,7 @@ class LoginFrom extends Component {
               ]}
             >
               <Input
+                onChange={this.inputChangePassword}
                 type="password"
                 prefix={<UnlockOutlined className="site-form-item-icon" />}
                 placeholder="字母+数字,大于6位，小于20位"
@@ -137,6 +172,7 @@ class LoginFrom extends Component {
               <Row gutter={13}>
                 <Col span={15}>
                   <Input
+                    onChange={this.inputChangeCode}
                     prefix={<UnlockOutlined className="site-form-item-icon" />}
                     placeholder="Code"
                   />
@@ -151,6 +187,7 @@ class LoginFrom extends Component {
             <Form.Item>
               <Button
                 type="primary"
+                loading={loading}
                 htmlType="submit"
                 className="login-form-button"
                 block

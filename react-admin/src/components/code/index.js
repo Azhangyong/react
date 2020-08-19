@@ -54,7 +54,7 @@ class Code extends Component {
         });
         GetCode(requestData)
             .then((response) => {
-                message.success("获取成功,验证码:"+response.data.message)
+                message.success(response.data.message)
                 //执行倒计时
                 this.countDown();
             })
