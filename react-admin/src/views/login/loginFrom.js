@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-
+import {withRouter} from 'react-router-dom'
 import { Form, Input, Button, Row, Col } from 'antd'; //antd
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 //公共验证
@@ -34,14 +34,17 @@ class LoginFrom extends Component {
     })
     Login(requestData)
       .then((response) => {
-        console.log(response);
+        this.setState({
+          loading:false
+        })
+        //路由跳转
+       this.props.history.push("./index")
       })
       .catch((error) => {
         this.setState({
           loading:false
         })
       });
-    console.log(values);
   };
 
   //input输入数据处理
@@ -202,4 +205,4 @@ class LoginFrom extends Component {
   }
 }
 
-export default LoginFrom;
+export default withRouter(LoginFrom);
