@@ -10,6 +10,8 @@ import { Login } from '../../api/account.js';
 import Code from "../../components/code/index"
 //密码加密
 import CryptoJs from "crypto-js"
+//方法
+import {setToken} from "../../utils/session"
 class LoginFrom extends Component {
   constructor() {
     super();
@@ -32,11 +34,14 @@ class LoginFrom extends Component {
     this.setState({
       loading:true
     })
+    this.props.history.push("./index")
+    return
     Login(requestData)
       .then((response) => {
         this.setState({
           loading:false
         })
+        setToken(response.data.data.token)//存token
         //路由跳转
        this.props.history.push("./index")
       })
