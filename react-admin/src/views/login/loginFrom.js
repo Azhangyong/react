@@ -34,8 +34,6 @@ class LoginFrom extends Component {
     this.setState({
       loading:true
     })
-    this.props.history.push("./index")
-    return
     Login(requestData)
       .then((response) => {
         this.setState({
