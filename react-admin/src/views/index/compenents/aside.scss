@@ -1,5 +1,5 @@
 .logo {
-    display: flex;
+    float: left;
     height: 75px;
     align-items: center;
     justify-content: center;
@@ -7,10 +7,38 @@
     margin: 0;
     padding: 0;
     background-color: #001529;
+
     span {
         display: block;
         width: 177px;
         height: 47px;
         background-color: #1a2d3f;
+    }
+
+
+}
+
+.close {
+    .logo {
+        width: 80px !important;
+        transition: all .2s ease;
+
+        span {
+            width: 100%;
+        }
+    }
+
+    .header-worp {
+        margin-left: 100px;
+    }
+
+}
+
+.header-worp {
+    margin-left: 270px;
+
+    .collapsed-icon {
+        font-size: 24px;
+        cursor: pointer
     }
 }
