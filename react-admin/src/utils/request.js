@@ -1,6 +1,7 @@
 import axios from "axios";
 //获取存储数据
 import { getToken, getUsername } from "./cookes";
+import { message } from "antd";
 //拦截器 第一步，创建实例
 
 const service = axios.create({
@@ -24,8 +25,14 @@ service.interceptors.request.use(
 // Add a response interceptor
 service.interceptors.response.use(
   function (response) {
-    // Do something with response data
-    return response;
+    const data = response.data
+    if (data.resCode === 0) {//数据成功
+      return response;
+    } else {//全局错误拦截
+      message.info(data.message)
+      return Promise.reject(response);
+    }
+
   },
   function (error) {
     // Do something with response error
