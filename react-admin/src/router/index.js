@@ -20,16 +20,16 @@ const Router = [{
 {
     title: "部门管理",
     icon: "bars",
-    key: "/index/navigation",
+    key: "/index/department",
     children: [{
         title: "部门列表",
         icon: "",
-        key: "/index/navigation/dropdown",
+        key: "/index/department/list",
     },
     {
         title: "添加部们",
         icon: "",
-        key: "/index/navigation/menu",
+        key: "/index/department/add",
     }]
 },
 {

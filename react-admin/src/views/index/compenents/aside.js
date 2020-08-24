@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 //组件
-import AsideMenu from "../../../components/asideMenu/index"
+import AsideMenu from "../../../components/asideMenu/index";
 
 export default class Aside extends Component {
   constructor() {
@@ -8,8 +8,6 @@ export default class Aside extends Component {
     this.state = {};
   }
   render() {
-    return (
-      <AsideMenu />
-    );
+    return <AsideMenu />;
   }
 }

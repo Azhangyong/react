@@ -1,52 +1,53 @@
-import React, { Component, Fragment } from 'react';
-import {withRouter} from 'react-router-dom'
-import { Form, Input, Button, Row, Col } from 'antd'; //antd
-import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import { Form, Input, Button, Row, Col } from "antd"; //antd
+import { UserOutlined, UnlockOutlined } from "@ant-design/icons";
 //公共验证
-import { validate_password, validate_email } from '../../utils/validate';
+import { validate_password, validate_email } from "../../utils/validate";
 //api
-import { Login } from '../../api/account.js';
+import { Login } from "../../api/account.js";
 //组件
-import Code from "../../components/code/index"
+import Code from "../../components/code/index";
 //密码加密
-import CryptoJs from "crypto-js"
+import CryptoJs from "crypto-js";
 //方法
-import {setToken} from "../../utils/session"
+import { setToken, setUsername } from "../../utils/cookes";
 class LoginFrom extends Component {
   constructor() {
     super();
     this.state = {
-      username: '',
+      username: "",
       passwoed: "",
       code: "",
       module: "login",
-      loading:false
+      loading: false,
     };
     //react 没有数据双向绑定的概念
   }
   //登录
   onFinish = (values) => {
-    const requestData={
-      username:this.state.username,
-      password:CryptoJs.MD5(this.state.password).toString(),
-      code:this.state.code
-    }
+    const requestData = {
+      username: this.state.username,
+      password: CryptoJs.MD5(this.state.password).toString(),
+      code: this.state.code,
+    };
     this.setState({
-      loading:true
-    })
+      loading: true,
+    });
     Login(requestData)
       .then((response) => {
         this.setState({
-          loading:false
-        })
-        setToken(response.data.data.token)//存token
+          loading: false,
+        });
+        setToken(response.data.data.token); //存token
+        setUsername(response.data.data.username); //存名字
         //路由跳转
-       this.props.history.push("./index")
+        this.props.history.push("./index");
       })
       .catch((error) => {
         this.setState({
-          loading:false
-        })
+          loading: false,
+        });
       });
   };
 
@@ -70,7 +71,8 @@ class LoginFrom extends Component {
     this.setState({
       password,
     });
-  }; inputChangeCode = (e) => {
+  };
+  inputChangeCode = (e) => {
     //e.persist()其实真正的原因是因为React里面的事件并不是真实的DOM事件，而是自己在原生DOM事件上进行了封装与合成。
     //合成事件是由事件池来管理的，合成事件对象可能会被重用，合成事件的所有属性也会随之被清空。所以当在异步处理程序（如setTimeout等等）
     //中或者浏览器控制台中去访问合成事件的属性，默认react 会把其属性全部设为null。
@@ -82,14 +84,10 @@ class LoginFrom extends Component {
   };
   toggleFrom = () => {
     //调用父级传过来的方法
-    this.props.switchForm('register');
+    this.props.switchForm("register");
   };
   render() {
-    const {
-      username,
-      module,
-      loading
-    } = this.state;
+    const { username, module, loading } = this.state;
     let _this = this;
     return (
       <Fragment>
@@ -107,7 +105,7 @@ class LoginFrom extends Component {
             <Form.Item
               name="username"
               rules={[
-                { required: true, message: '邮箱不能为空!' },
+                { required: true, message: "邮箱不能为空!" },
                 // {type: 'email', message: '邮箱格式不正确'},
                 ({ getFieldValue }) => ({
                   //监听 密码框输入的值es6 结构
@@ -122,7 +120,7 @@ class LoginFrom extends Component {
                         code_button_disabled: true,
                       });
                     }
-                    return Promise.reject('邮箱格式不正确');
+                    return Promise.reject("邮箱格式不正确");
                   },
                 }),
               ]}
@@ -137,15 +135,15 @@ class LoginFrom extends Component {
             <Form.Item
               name="password"
               rules={[
-                { required: true, message: '密码不能为空!' },
-                { min: 6, message: '密码格式不正确' },
+                { required: true, message: "密码不能为空!" },
+                { min: 6, message: "密码格式不正确" },
                 {
                   max: 20,
-                  message: '密码不能大于20位',
+                  message: "密码不能大于20位",
                 },
                 {
                   pattern: validate_password,
-                  message: '请输入6到20位的数字加子母密码',
+                  message: "请输入6到20位的数字加子母密码",
                 },
                 // ({getFieldValue}) => ({
                 //   //监听 密码框输入的值es6 结构
@@ -171,9 +169,7 @@ class LoginFrom extends Component {
             </Form.Item>
             <Form.Item
               name="Code"
-              rules={[
-                { required: true, message: '请输入6位验证码!', len: 6 }
-              ]}
+              rules={[{ required: true, message: "请输入6位验证码!", len: 6 }]}
             >
               <Row gutter={13}>
                 <Col span={15}>
@@ -185,7 +181,6 @@ class LoginFrom extends Component {
                 </Col>
                 <Col span={9}>
                   <Code username={username} module={module}></Code>
-
                 </Col>
               </Row>
             </Form.Item>

@@ -1,10 +1,10 @@
-import React from 'react';
-import {Route, Switch, BrowserRouter} from 'react-router-dom';
+import React from "react";
+import { Route, Switch, BrowserRouter } from "react-router-dom";
 //引入组件
-import Login from './views/login/index.js';
-import Index from './views/index/index.js';
+import Login from "./views/login/index.js";
+import Index from "./views/index/index.js";
 //私有组件
-import PrivateRouter from "./components/privateRouter/index"
+import PrivateRouter from "./components/privateRouter/index";
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -14,8 +14,9 @@ class App extends React.Component {
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact render={() => <Login />}  path="/"></Route>
-          <PrivateRouter component={Index}  path="/index" />
+          <Route exact render={() => <Login />} path="/">
+          </Route>
+          <PrivateRouter component={Index} path="/index" />
         </Switch>
       </BrowserRouter>
     );
