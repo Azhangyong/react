@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Input, Button, InputNumber, Radio, message } from "antd";
 //api
-import { DepartmentAddApi } from "../../api/department";
+import { DepartmentAddApi } from "@/api/department";
 
 class DepartmentAdd extends Component {
   constructor() {
@@ -15,7 +15,6 @@ class DepartmentAdd extends Component {
     };
   }
   onSubmit = (value) => {
-    console.log(value);
     if (!value.name) {
       message.error("部门名称不能为空");
       return false;
