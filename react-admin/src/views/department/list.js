@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 //antd 组件
-import { Form, Input, Button, message, Table, Switch } from "antd";
+import { Form, Input, Button, message, Table, Switch, Modal } from "antd";
 //api
 import { DepartmentListApi, DepartmentDeleteApi } from "../../api/department";
 
@@ -14,6 +14,8 @@ class DepartmentList extends Component {
       pageSize: 10,
       //页码
       pageNumber: 1,
+      //id
+      id: "",
       //复选框id
       rowKeys: [],
       //表头
@@ -62,22 +64,39 @@ class DepartmentList extends Component {
       ],
       //表数据
       data: [],
+      //弹出层
+      visible: false
     };
   }
   //禁启用按钮
   switchChange = (id, status) => {
     console.log(id, status);
   };
-  // 数据删除
-  onHandlerDelete = (id) => {
-    if (!id) {
-      return false;
-    }
-    DepartmentDeleteApi({ id }).then((response) => {
+  //确认删除
+  modalThen = () => {
+    DepartmentDeleteApi({ id: this.state.id }).then((response) => {
       message.info(response.data.message);
       //请求数据
       this.loadData();
+      this.setState({
+        visible: false,
+        id: ""
+      })
     });
+  }
+  hideCancel = () => {
+    this.setState({
+      visible: false
+    })
+  }
+  // 数据删除
+  onHandlerDelete(id) {
+    if (!id) { return false }
+    this.setState({
+      visible: true,
+      id
+    })
+
   };
   //生命周期 挂载完成
   componentDidMount() {
@@ -159,6 +178,17 @@ class DepartmentList extends Component {
           ></Table>
           <Button type="primary">批量删除</Button>
         </div>
+        <Modal
+          title="提示"
+          visible={this.state.visible}
+          onOk={this.modalThen}
+          onCancel={this.hideCancel}
+          okText="确认"
+          cancelText="取消"
+        >
+
+          <p className="text-center">确定删除此信息？<strong className="color-red">删除后将无法恢复。</strong></p>
+        </Modal>
       </Fragment>
     );
   }
