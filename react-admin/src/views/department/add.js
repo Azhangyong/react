@@ -1,18 +1,37 @@
 import React, { Component } from "react";
 import { Form, Input, Button, InputNumber, Radio, message } from "antd";
 //api
-import { DepartmentAddApi } from "@/api/department";
+import { DepartmentAddApi, DepartmentDetailApi, DepartmentEditApi } from "@/api/department";
 
 class DepartmentAdd extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       formLayout: {
         labelCol: { span: 3 }, //左边占2 向right 靠齐
         wrapperCol: { span: 20 },
       },
       loading: false,
+      id: ""
     };
+  }
+  componentWillMount() {
+    if (!this.props.location.state) { return false }
+    this.setState({
+      id: this.props.location.state.id
+    })
+  }
+  componentDidMount() {
+    this.detail()
+  }
+  detail = () => {
+    if (!this.props.location.state) { return false }
+    DepartmentDetailApi({ id: this.state.id }).then(response => {
+      let { name, number, state, content } = response.data.data
+      this.refs.form.setFieldsValue({
+        name, number, state, content
+      })
+    })
   }
   onSubmit = (value) => {
     if (!value.name) {
@@ -30,6 +49,10 @@ class DepartmentAdd extends Component {
     this.setState({
       loading: true,
     });
+    this.state.id ? this.onEdit(value) : this.onAdd(value)
+  };
+  //添加
+  onAdd = (value) => {
     DepartmentAddApi(value)
       .then((response) => {
         const data = response.data;
@@ -44,8 +67,25 @@ class DepartmentAdd extends Component {
           loading: false,
         });
       });
-  };
+  }
+  //编辑
+  onEdit = (value) => {
+    value.id = this.state.id
+    DepartmentEditApi(value).then((response) => {
+      const data = response.data;
+      message.info(data.message);
+      this.setState({
+        loading: false,
+      });
+      this.refs.form.resetFields(); //清空表单
+    })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
 
+  }
   render() {
     let { formLayout } = this.state;
     return (

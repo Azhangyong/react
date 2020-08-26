@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from "react";
+import { Link } from "react-router-dom"
 //antd 组件
 import { Form, Input, Button, message, Table, Switch, Modal } from "antd";
 //api
-import { DepartmentListApi, DepartmentDeleteApi } from "../../api/department";
+import { DepartmentListApi, DepartmentDeleteApi, DepartmentStatusApi } from "../../api/department";
 
 class DepartmentList extends Component {
   constructor() {
@@ -35,7 +36,7 @@ class DepartmentList extends Component {
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
                 defaultChecked={record.status === "1" ? true : false}
-                onClick={() => this.switchChange(record.id, record.status)}
+                onChange={() => this.switchChange(record.id, record.status)}
               />
             );
           },
@@ -53,7 +54,9 @@ class DepartmentList extends Component {
           render: (text, record) => {
             return (
               <div className="inline-button">
-                <Button type="primary">编辑</Button>
+                <Button type="primary" onClick={() => this.onHandlerEdit(record)}>
+                  <Link to={{ pathname: "/index/department/add", state: { id: record.id } }}>编辑</Link>
+                </Button>
                 <Button onClick={() => this.onHandlerDelete(record.id)}>
                   删除
                 </Button>
@@ -65,21 +68,31 @@ class DepartmentList extends Component {
       //表数据
       data: [],
       //弹出层
-      visible: false
+      visible: false,
+      confirmLoading: false
     };
   }
   //禁启用按钮
-  switchChange = (id, status) => {
-    console.log(id, status);
+  switchChange = (id, statusx) => {
+    if (!id) { return false }
+    let status = statusx === "1" ? false : true
+    DepartmentStatusApi({ id, status }).then(response => {
+      message.info(response.data.message);
+      this.loadData();
+    })
   };
   //确认删除
   modalThen = () => {
+    this.setState({
+      confirmLoading: true
+    })
     DepartmentDeleteApi({ id: this.state.id }).then((response) => {
       message.info(response.data.message);
       //请求数据
       this.loadData();
       this.setState({
         visible: false,
+        confirmLoading: false,
         id: ""
       })
     });
@@ -89,6 +102,7 @@ class DepartmentList extends Component {
       visible: false
     })
   }
+
   // 数据删除
   onHandlerDelete(id) {
     if (!id) { return false }
@@ -96,11 +110,14 @@ class DepartmentList extends Component {
       visible: true,
       id
     })
-
   };
   //生命周期 挂载完成
   componentDidMount() {
     this.loadData();
+  }
+  //编辑
+  onHandlerEdit(data) {
+    console.log(data)
   }
   //获取数据
   loadData = () => {
@@ -152,7 +169,7 @@ class DepartmentList extends Component {
     console.log(rowKeys, rows);
   };
   render() {
-    const { columns, data } = this.state;
+    const { columns, data, confirmLoading } = this.state;
     const rowSelection = {
       onChange: this.onCheckBox,
     };
@@ -183,6 +200,7 @@ class DepartmentList extends Component {
           visible={this.state.visible}
           onOk={this.modalThen}
           onCancel={this.hideCancel}
+          confirmLoading={confirmLoading}
           okText="确认"
           cancelText="取消"
         >

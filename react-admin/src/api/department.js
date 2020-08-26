@@ -32,3 +32,36 @@ export function DepartmentDeleteApi(data) {
     // params:data//type 为get
   });
 }
+/*
+ * 修改状态
+ */
+export function DepartmentStatusApi(data) {
+  return service.request({
+    url: "/department/status/",
+    method: "post",
+    data,
+    // params:data//type 为get
+  });
+}
+/*
+ * 详情
+ */
+export function DepartmentDetailApi(data) {
+  return service.request({
+    url: "/department/detailed/",
+    method: "post",
+    data,
+    // params:data//type 为get
+  });
+}
+/*
+ *编辑
+ */
+export function DepartmentEditApi(data) {
+  return service.request({
+    url: "/department/edit/",
+    method: "post",
+    data,
+    // params:data//type 为get
+  });
+}
