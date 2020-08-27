@@ -33,6 +33,7 @@ class DepartmentList extends Component {
           render: (text, record, index) => {
             return (
               <Switch
+                loading={record.id === this.state.selectId}
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
                 defaultChecked={record.status === "1" ? true : false}
@@ -69,16 +70,28 @@ class DepartmentList extends Component {
       data: [],
       //弹出层
       visible: false,
-      confirmLoading: false
+      confirmLoading: false,
+      selectId: "",
+      tableLoading: false
     };
   }
   //禁启用按钮
   switchChange = (id, statusx) => {
     if (!id) { return false }
+    this.setState({
+      selectId: id
+    })
     let status = statusx === "1" ? false : true
     DepartmentStatusApi({ id, status }).then(response => {
       message.info(response.data.message);
       this.loadData();
+      this.setState({
+        selectId: ""
+      })
+    }).catch(error => {
+      this.setState({
+        selectId: ""
+      })
     })
   };
   //确认删除
@@ -93,7 +106,8 @@ class DepartmentList extends Component {
       this.setState({
         visible: false,
         confirmLoading: false,
-        id: ""
+        id: "",
+        rowKeys: []
       })
     });
   }
@@ -105,20 +119,23 @@ class DepartmentList extends Component {
 
   // 数据删除
   onHandlerDelete(id) {
-    if (!id) { return false }
+    if (!id) {
+
+      if (this.state.rowKeys.length === 0) { return false }
+      id = this.state.rowKeys.join()//转成字符串
+    }
     this.setState({
       visible: true,
       id
     })
+
+
   };
   //生命周期 挂载完成
   componentDidMount() {
     this.loadData();
   }
-  //编辑
-  onHandlerEdit(data) {
-    console.log(data)
-  }
+
   //获取数据
   loadData = () => {
     const { pageSize, pageNumber, keyWork } = this.state;
@@ -129,7 +146,9 @@ class DepartmentList extends Component {
     if (keyWork) {
       requestData.name = keyWork;
     }
-
+    this.setState({
+      tableLoading: true
+    });
     DepartmentListApi(requestData).then((response) => {
       const dataList = response.data.data; //数据
       if (response) {
@@ -138,7 +157,14 @@ class DepartmentList extends Component {
           data: dataList.data,
         });
       }
-    });
+      this.setState({
+        tableLoading: false
+      });
+    }).catch(error => {
+      this.setState({
+        tableLoading: false
+      });
+    })
     // {
     //   key: "1",
     //   name: "123",
@@ -147,6 +173,7 @@ class DepartmentList extends Component {
     // },
   };
   onFinish = (values) => {
+    if (this.state.tableLoading) { return false }
     if (!values.name) {
       message.info("请输入查询部门名称!!");
       return false;
@@ -166,7 +193,6 @@ class DepartmentList extends Component {
     this.setState({
       rowKeys,
     });
-    console.log(rowKeys, rows);
   };
   render() {
     const { columns, data, confirmLoading } = this.state;
@@ -187,13 +213,14 @@ class DepartmentList extends Component {
         </Form>
         <div className="table-wrap">
           <Table
+            loading={this.state.tableLoading}
             rowSelection={rowSelection}
             rowKey="id"
             columns={columns}
             dataSource={data}
             bordered
           ></Table>
-          <Button type="primary">批量删除</Button>
+          <Button type="primary" onClick={() => this.onHandlerDelete()}>批量删除</Button>
         </div>
         <Modal
           title="提示"
