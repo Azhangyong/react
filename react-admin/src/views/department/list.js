@@ -1,10 +1,15 @@
 import React, { Component, Fragment } from "react";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 //antd 组件
 import { Form, Input, Button, message, Table, Switch, Modal } from "antd";
 //api
-import { DepartmentListApi, DepartmentDeleteApi, DepartmentStatusApi } from "../../api/department";
-
+import {
+  DepartmentListApi,
+  DepartmentDeleteApi,
+  DepartmentStatusApi,
+} from "../../api/department";
+//table 组件
+import TableComponent from "@/components/tableData/index";
 class DepartmentList extends Component {
   constructor() {
     super();
@@ -55,8 +60,15 @@ class DepartmentList extends Component {
           render: (text, record) => {
             return (
               <div className="inline-button">
-                <Button type="primary" onClick={() => this.onHandlerEdit(record)}>
-                  <Link to={{ pathname: "/index/department/add", state: { id: record.id } }}>编辑</Link>
+                <Button type="primary">
+                  <Link
+                    to={{
+                      pathname: "/index/department/add",
+                      state: { id: record.id },
+                    }}
+                  >
+                    编辑
+                  </Link>
                 </Button>
                 <Button onClick={() => this.onHandlerDelete(record.id)}>
                   删除
@@ -72,33 +84,37 @@ class DepartmentList extends Component {
       visible: false,
       confirmLoading: false,
       selectId: "",
-      tableLoading: false
+      tableLoading: false,
     };
   }
   //禁启用按钮
   switchChange = (id, statusx) => {
-    if (!id) { return false }
+    if (!id) {
+      return false;
+    }
     this.setState({
-      selectId: id
-    })
-    let status = statusx === "1" ? false : true
-    DepartmentStatusApi({ id, status }).then(response => {
-      message.info(response.data.message);
-      this.loadData();
-      this.setState({
-        selectId: ""
+      selectId: id,
+    });
+    let status = statusx === "1" ? false : true;
+    DepartmentStatusApi({ id, status })
+      .then((response) => {
+        message.info(response.data.message);
+        this.loadData();
+        this.setState({
+          selectId: "",
+        });
       })
-    }).catch(error => {
-      this.setState({
-        selectId: ""
-      })
-    })
+      .catch((error) => {
+        this.setState({
+          selectId: "",
+        });
+      });
   };
   //确认删除
   modalThen = () => {
     this.setState({
-      confirmLoading: true
-    })
+      confirmLoading: true,
+    });
     DepartmentDeleteApi({ id: this.state.id }).then((response) => {
       message.info(response.data.message);
       //请求数据
@@ -107,30 +123,29 @@ class DepartmentList extends Component {
         visible: false,
         confirmLoading: false,
         id: "",
-        rowKeys: []
-      })
+        rowKeys: [],
+      });
     });
-  }
+  };
   hideCancel = () => {
     this.setState({
-      visible: false
-    })
-  }
+      visible: false,
+    });
+  };
 
   // 数据删除
   onHandlerDelete(id) {
     if (!id) {
-
-      if (this.state.rowKeys.length === 0) { return false }
-      id = this.state.rowKeys.join()//转成字符串
+      if (this.state.rowKeys.length === 0) {
+        return false;
+      }
+      id = this.state.rowKeys.join(); //转成字符串
     }
     this.setState({
       visible: true,
-      id
-    })
-
-
-  };
+      id,
+    });
+  }
   //生命周期 挂载完成
   componentDidMount() {
     this.loadData();
@@ -147,24 +162,26 @@ class DepartmentList extends Component {
       requestData.name = keyWork;
     }
     this.setState({
-      tableLoading: true
+      tableLoading: true,
     });
-    DepartmentListApi(requestData).then((response) => {
-      const dataList = response.data.data; //数据
-      if (response) {
-        //返回一个null
+    DepartmentListApi(requestData)
+      .then((response) => {
+        const dataList = response.data.data; //数据
+        if (response) {
+          //返回一个null
+          this.setState({
+            data: dataList.data,
+          });
+        }
         this.setState({
-          data: dataList.data,
+          tableLoading: false,
         });
-      }
-      this.setState({
-        tableLoading: false
+      })
+      .catch((error) => {
+        this.setState({
+          tableLoading: false,
+        });
       });
-    }).catch(error => {
-      this.setState({
-        tableLoading: false
-      });
-    })
     // {
     //   key: "1",
     //   name: "123",
@@ -173,7 +190,9 @@ class DepartmentList extends Component {
     // },
   };
   onFinish = (values) => {
-    if (this.state.tableLoading) { return false }
+    if (this.state.tableLoading) {
+      return false;
+    }
     if (!values.name) {
       message.info("请输入查询部门名称!!");
       return false;
@@ -195,7 +214,7 @@ class DepartmentList extends Component {
     });
   };
   render() {
-    const { columns, data, confirmLoading } = this.state;
+    const { columns, data, confirmLoading, tableLoading } = this.state;
     const rowSelection = {
       onChange: this.onCheckBox,
     };
@@ -212,15 +231,18 @@ class DepartmentList extends Component {
           </Form.Item>
         </Form>
         <div className="table-wrap">
-          <Table
-            loading={this.state.tableLoading}
+          <TableComponent columns={columns} url="/department/list/" rowSelection={rowSelection} />
+          {/* <Table
+            loading={tableLoading}
             rowSelection={rowSelection}
             rowKey="id"
             columns={columns}
             dataSource={data}
             bordered
-          ></Table>
-          <Button type="primary" onClick={() => this.onHandlerDelete()}>批量删除</Button>
+          ></Table> */}
+          <Button type="primary" onClick={() => this.onHandlerDelete()}>
+            批量删除
+          </Button>
         </div>
         <Modal
           title="提示"
@@ -231,8 +253,10 @@ class DepartmentList extends Component {
           okText="确认"
           cancelText="取消"
         >
-
-          <p className="text-center">确定删除此信息？<strong className="color-red">删除后将无法恢复。</strong></p>
+          <p className="text-center">
+            确定删除此信息？
+            <strong className="color-red">删除后将无法恢复。</strong>
+          </p>
         </Modal>
       </Fragment>
     );
