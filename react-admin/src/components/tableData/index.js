@@ -18,19 +18,18 @@ class TableComponent extends Component {
       keyWork: "",
       //数据
       data: [],
-      //请求数据地址
-      dataUrl: "",
+
     };
   }
   componentDidMount() {
     this.setState({
-      dataUrl: this.props.url,
+      data: this.props.config,
     });
     this.loadData();
   }
   //获取数据
   loadData = () => {
-    const { pageSize, pageNumber, keyWork,dataUrl } = this.state;
+    const { pageSize, pageNumber, keyWork, dataUrl } = this.state;
     const requestData = {
       pageSize,
       pageNumber,
@@ -41,7 +40,8 @@ class TableComponent extends Component {
     this.setState({
       tableLoading: true,
     });
-    DepartmentListApi(requestData,this.props.url)
+    requestData.url=this.props.config.url
+    DepartmentListApi(requestData, this.props.url)
       .then((response) => {
         const dataList = response.data.data; //数据
         if (response) {
@@ -65,11 +65,11 @@ class TableComponent extends Component {
     let { columns, rowSelection } = this.props;
     return (
       <Table
-        loading={tableLoading}
-        rowSelection={rowSelection}
+        // loading={tableLoading}
+        // rowSelection={rowSelection}
         rowKey="id"
-        columns={columns}
-        dataSource={data}
+        columns={data.thead}
+        // dataSource={data}
         bordered
       ></Table>
     );

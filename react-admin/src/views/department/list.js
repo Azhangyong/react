@@ -24,60 +24,6 @@ class DepartmentList extends Component {
       id: "",
       //复选框id
       rowKeys: [],
-      //表头
-      columns: [
-        {
-          title: "部门名称",
-          dataIndex: "name",
-          key: "name",
-        },
-        {
-          title: "禁启用",
-          dataIndex: "status",
-          key: "status",
-          render: (text, record, index) => {
-            return (
-              <Switch
-                loading={record.id === this.state.selectId}
-                checkedChildren="启用"
-                unCheckedChildren="禁用"
-                defaultChecked={record.status === "1" ? true : false}
-                onChange={() => this.switchChange(record.id, record.status)}
-              />
-            );
-          },
-        },
-        {
-          title: "人员数量",
-          dataIndex: "number",
-          key: "number",
-        },
-        {
-          title: "操作",
-          dataIndex: "operation",
-          key: "operation",
-          width: 215,
-          render: (text, record) => {
-            return (
-              <div className="inline-button">
-                <Button type="primary">
-                  <Link
-                    to={{
-                      pathname: "/index/department/add",
-                      state: { id: record.id },
-                    }}
-                  >
-                    编辑
-                  </Link>
-                </Button>
-                <Button onClick={() => this.onHandlerDelete(record.id)}>
-                  删除
-                </Button>
-              </div>
-            );
-          },
-        },
-      ],
       //表数据
       data: [],
       //弹出层
@@ -85,6 +31,62 @@ class DepartmentList extends Component {
       confirmLoading: false,
       selectId: "",
       tableLoading: false,
+      tableConfig: {
+        url: "/department/list/",
+        thead: [
+          {
+            title: "部门名称",
+            dataIndex: "name",
+            key: "name",
+          },
+          {
+            title: "禁启用",
+            dataIndex: "status",
+            key: "status",
+            render: (text, record, index) => {
+              return (
+                <Switch
+                  loading={record.id === this.state.selectId}
+                  checkedChildren="启用"
+                  unCheckedChildren="禁用"
+                  defaultChecked={record.status === "1" ? true : false}
+                  onChange={() => this.switchChange(record.id, record.status)}
+                />
+              );
+            },
+          },
+          {
+            title: "人员数量",
+            dataIndex: "number",
+            key: "number",
+          },
+          {
+            title: "操作",
+            dataIndex: "operation",
+            key: "operation",
+            width: 215,
+            render: (text, record) => {
+              return (
+                <div className="inline-button">
+                  <Button type="primary">
+                    <Link
+                      to={{
+                        pathname: "/index/department/add",
+                        state: { id: record.id },
+                      }}
+                    >
+                      编辑
+                    </Link>
+                  </Button>
+                  <Button onClick={() => this.onHandlerDelete(record.id)}>
+                    删除
+                  </Button>
+                </div>
+              );
+            },
+          },
+        ],
+      }
     };
   }
   //禁启用按钮
@@ -231,7 +233,7 @@ class DepartmentList extends Component {
           </Form.Item>
         </Form>
         <div className="table-wrap">
-          <TableComponent columns={columns} url="/department/list/" rowSelection={rowSelection} />
+          <TableComponent config={this.state.tableConfig} />
           {/* <Table
             loading={tableLoading}
             rowSelection={rowSelection}

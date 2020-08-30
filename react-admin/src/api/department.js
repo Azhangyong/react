@@ -15,7 +15,7 @@ export function DepartmentAddApi(data) {
  */
 export function DepartmentListApi(data, url) {
   return service.request({
-    url,
+    url: data.url,
     method: "post",
     data,
     // params:data//type 为get
