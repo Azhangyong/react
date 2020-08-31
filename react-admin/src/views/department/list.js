@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 //antd 组件
-import { Form, Input, Button, message, Table, Switch, Modal } from "antd";
+import { Form, Input, Button, message, Switch, Modal } from "antd";
 //api
 import {
-  DepartmentListApi,
+
   DepartmentDeleteApi,
   DepartmentStatusApi,
 } from "../../api/department";
@@ -32,7 +32,10 @@ class DepartmentList extends Component {
       selectId: "",
       tableLoading: false,
       tableConfig: {
-        url: "/department/list/",
+        url: "departmentList",
+        checkbox: true,
+        method: "post",
+        rowkey: "id",
         thead: [
           {
             title: "部门名称",
@@ -148,49 +151,7 @@ class DepartmentList extends Component {
       id,
     });
   }
-  //生命周期 挂载完成
-  componentDidMount() {
-    this.loadData();
-  }
 
-  //获取数据
-  loadData = () => {
-    const { pageSize, pageNumber, keyWork } = this.state;
-    const requestData = {
-      pageSize,
-      pageNumber,
-    };
-    if (keyWork) {
-      requestData.name = keyWork;
-    }
-    this.setState({
-      tableLoading: true,
-    });
-    DepartmentListApi(requestData)
-      .then((response) => {
-        const dataList = response.data.data; //数据
-        if (response) {
-          //返回一个null
-          this.setState({
-            data: dataList.data,
-          });
-        }
-        this.setState({
-          tableLoading: false,
-        });
-      })
-      .catch((error) => {
-        this.setState({
-          tableLoading: false,
-        });
-      });
-    // {
-    //   key: "1",
-    //   name: "123",
-    //   status: false,
-    //   number: 50,
-    // },
-  };
   onFinish = (values) => {
     if (this.state.tableLoading) {
       return false;
@@ -216,10 +177,7 @@ class DepartmentList extends Component {
     });
   };
   render() {
-    const { columns, data, confirmLoading, tableLoading } = this.state;
-    const rowSelection = {
-      onChange: this.onCheckBox,
-    };
+    let { confirmLoading } = this.state
     return (
       <Fragment>
         <Form name="horizontal_login" layout="inline" onFinish={this.onFinish}>

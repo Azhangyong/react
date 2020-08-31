@@ -3,10 +3,10 @@ import React, { Component } from "react";
 import { Table } from "antd";
 //api
 import {
-  DepartmentListApi,
-  DepartmentDeleteApi,
-  DepartmentStatusApi,
-} from "@/api/department";
+  TableList
+} from "@/api/common";
+
+import requestUrl from "@/api/requestUrl"
 class TableComponent extends Component {
   constructor(props) {
     super(props);
@@ -14,11 +14,9 @@ class TableComponent extends Component {
       tableLoading: false,
       pageNumber: 1,
       pageSize: 10,
-      //查询部门名称
-      keyWork: "",
       //数据
       data: [],
-
+      dataList: []
     };
   }
   componentDidMount() {
@@ -29,25 +27,24 @@ class TableComponent extends Component {
   }
   //获取数据
   loadData = () => {
-    const { pageSize, pageNumber, keyWork, dataUrl } = this.state;
+    const { pageSize, pageNumber } = this.state;
     const requestData = {
-      pageSize,
-      pageNumber,
-    };
-    if (keyWork) {
-      requestData.name = keyWork;
+      url: requestUrl[this.props.config.url],
+      method: this.props.config.method,
+      data: {
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+      }
+
     }
-    this.setState({
-      tableLoading: true,
-    });
-    requestData.url=this.props.config.url
-    DepartmentListApi(requestData, this.props.url)
+
+    TableList(requestData)
       .then((response) => {
         const dataList = response.data.data; //数据
         if (response) {
           //返回一个null
           this.setState({
-            data: dataList.data,
+            dataList: dataList.data,
           });
         }
         this.setState({
@@ -55,21 +52,29 @@ class TableComponent extends Component {
         });
       })
       .catch((error) => {
+
         this.setState({
           tableLoading: false,
         });
       });
   };
+  /**复选框 */
+  onCheckbox = (value) => {
+    console.log(value)
+  }
   render() {
-    let { tableLoading, data } = this.state;
-    let { columns, rowSelection } = this.props;
+    let { data, dataList, tableLoading } = this.state;
+    let { checkbox, rowkey } = this.props.config;
+    const rowSelection = {
+      onChange: this.onCheckBox,
+    };
     return (
       <Table
-        // loading={tableLoading}
-        // rowSelection={rowSelection}
-        rowKey="id"
+        loading={tableLoading}
+        rowSelection={checkbox ? rowSelection : null}
+        rowKey={rowkey || "id"}
         columns={data.thead}
-        // dataSource={data}
+        dataSource={dataList}
         bordered
       ></Table>
     );

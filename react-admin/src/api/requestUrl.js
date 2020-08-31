@@ -1,3 +1,4 @@
-const requestUrl={
-    "departmentList":"/department/list"
+const requestUrl = {
+    "departmentList": "/department/list/"
 }
+export default requestUrl
