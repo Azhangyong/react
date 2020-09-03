@@ -1,11 +1,9 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 //antd 组件
-import { Form, Input, Button, message, Switch, Modal } from "antd";
+import { Form, Input, Button, message, Switch } from "antd";
 //api
 import {
-
-  DepartmentDeleteApi,
   DepartmentStatusApi,
 } from "../../api/department";
 //table 组件
@@ -16,21 +14,11 @@ class DepartmentList extends Component {
     this.state = {
       //查询部门名称
       keyWork: "",
-      //显示条数
-      pageSize: 10,
-      //页码
-      pageNumber: 1,
-      //id
-      id: "",
       //复选框id
       rowKeys: [],
       //表数据
       data: [],
-      //弹出层
-      visible: false,
-      confirmLoading: false,
       selectId: "",
-      tableLoading: false,
       tableConfig: {
         url: "departmentList",
         checkbox: true,
@@ -81,9 +69,16 @@ class DepartmentList extends Component {
                       编辑
                     </Link>
                   </Button>
-                  <Button onClick={() => this.onHandlerDelete(record.id)}>
+                  <Button
+               onClick={() => this.onHandlerDelete(record.id)}
+                  >
                     删除
                   </Button>
+                  {/* 在父组件获取子组件的实例
+                  1.在子组件调用父组件的方法，并将子组件实例传回父组件
+                  2.通过实例调用子组件的方法
+                  
+                  */}
                 </div>
               );
             },
@@ -91,6 +86,10 @@ class DepartmentList extends Component {
         ],
       }
     };
+  }
+  //获取子组件
+  getChildren = (ref) => {
+    this.TableComponent = ref//存储子组件
   }
   //禁启用按钮
   switchChange = (id, statusx) => {
@@ -115,42 +114,7 @@ class DepartmentList extends Component {
         });
       });
   };
-  //确认删除
-  modalThen = () => {
-    this.setState({
-      confirmLoading: true,
-    });
-    DepartmentDeleteApi({ id: this.state.id }).then((response) => {
-      message.info(response.data.message);
-      //请求数据
-      this.loadData();
-      this.setState({
-        visible: false,
-        confirmLoading: false,
-        id: "",
-        rowKeys: [],
-      });
-    });
-  };
-  hideCancel = () => {
-    this.setState({
-      visible: false,
-    });
-  };
 
-  // 数据删除
-  onHandlerDelete(id) {
-    if (!id) {
-      if (this.state.rowKeys.length === 0) {
-        return false;
-      }
-      id = this.state.rowKeys.join(); //转成字符串
-    }
-    this.setState({
-      visible: true,
-      id,
-    });
-  }
 
   onFinish = (values) => {
     if (this.state.tableLoading) {
@@ -168,16 +132,17 @@ class DepartmentList extends Component {
     //请求数据
     this.loadData();
   };
-  /**
-   * 复选框
-   */
+
   onCheckBox = (rowKeys, rows) => {
     this.setState({
       rowKeys,
     });
   };
+  //删除
+  onHandlerDelete=(id)=>{
+    this.TableComponent.onHandlerDelete(id)
+  }
   render() {
-    let { confirmLoading } = this.state
     return (
       <Fragment>
         <Form name="horizontal_login" layout="inline" onFinish={this.onFinish}>
@@ -191,22 +156,9 @@ class DepartmentList extends Component {
           </Form.Item>
         </Form>
         <div className="table-wrap">
-          <TableComponent batchButton={true} config={this.state.tableConfig} />
+          <TableComponent onRef={this.getChildren} batchButton={true} config={this.state.tableConfig} />
         </div>
-        <Modal
-          title="提示"
-          visible={this.state.visible}
-          onOk={this.modalThen}
-          onCancel={this.hideCancel}
-          confirmLoading={confirmLoading}
-          okText="确认"
-          cancelText="取消"
-        >
-          <p className="text-center">
-            确定删除此信息？
-            <strong className="color-red">删除后将无法恢复。</strong>
-          </p>
-        </Modal>
+
       </Fragment>
     );
   }

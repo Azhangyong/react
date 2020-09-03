@@ -2,10 +2,11 @@ import React, { Component, Fragment } from "react";
 //验证propTypes
 import PropTypes from "prop-types"
 //antd 组件
-import { Table, Pagination, Row, Col, Button } from "antd";
+import { Table, Pagination, Row, Col, Button, message, Modal } from "antd";
 //api
 import {
-  TableList
+  TableList,
+  TableDelete
 } from "@/api/common";
 
 import requestUrl from "@/api/requestUrl"
@@ -19,8 +20,15 @@ class TableComponent extends Component {
       //数据
       data: [],
       dataList: [],
+      id:"",
       //页码
-      total: 0
+      total: 0,
+      //弹出层
+      modalConfirmLoading: false,
+      modalVisible: false,
+      confirmLoading: false,
+      //复选框
+      checkBoxValue: []
     };
   }
   componentDidMount() {
@@ -28,6 +36,8 @@ class TableComponent extends Component {
       data: this.props.config,
     });
     this.loadData();
+    //返回子组件实例
+    this.props.onRef(this)
   }
   //获取数据
   loadData = () => {
@@ -64,14 +74,16 @@ class TableComponent extends Component {
       });
   };
   /**复选框 */
-  onCheckbox = (value) => {
-    console.log(value)
+  onCheckBox = (value) => {
+    this.setState({
+      checkBoxValue: value
+    })
   }
   /**分页页码 */
   onChangeCurrnePage = (value, pageSize) => {
-    console.log(value, pageSize)
+
     this.setState({
-      pageNumber: value,
+      pageNumber: value === 0 ? 1 : value,
       pageSize: pageSize
     }, () => {
       this.loadData()
@@ -80,24 +92,71 @@ class TableComponent extends Component {
   }
   //一次请求条数
   onChangeSizePage(value, page) {
-    console.log(123)
-    // this.setState({
-    //   pageNumber: 1,
-    //   pageSize: page
-    // }, () => {
-    //   this.loadData()
-    // })
+    this.setState({
+      pageNumber: 1,
+      pageSize: page
+    }, () => {
+      this.loadData()
+    })
   }
+  hideCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+  // 数据删除
+  onHandlerDelete(id) {
+    //判断是否选中数据
+    if (this.state.checkBoxValue.length === 0) {
+      message.info("请选择需要删除的数据")
+      return
+    }
+    id = this.state.checkBoxValue.join()
+    this.setState({
+      modalVisible: true,
+      id,
+    });
+  }
+  //确认删除
+  modalThen = () => {
+
+    this.setState({
+      confirmLoading: true,
+    });
+    const requestData = {
+      url: requestUrl[`${this.props.config.url}Delete`],
+      data: {
+        id: this.state.id
+      }
+
+    }
+    TableDelete(requestData).then((response) => {
+      message.info(response.data.message);
+      //请求数据
+      this.loadData();
+      this.setState({
+        modalVisible: false,
+        confirmLoading: false,
+        id: "",
+        rowKeys: [],
+      });
+    });
+  };
+  hideCancel = () => {
+    this.setState({
+      modalVisible: false,
+    });
+  };
 
   render() {
-    let { data, dataList, tableLoading, total } = this.state;
+    let { data, dataList, tableLoading, total, modalConfirmLoading, modalVisible } = this.state;
     let { checkbox, rowkey } = this.props.config;
     const rowSelection = {
       onChange: this.onCheckBox,
     };
-    console.log(typeof total)
     return (
       <Fragment>
+        {/* tabel组件 */}
         <Table
           pagination={false}
           loading={tableLoading}
@@ -114,16 +173,30 @@ class TableComponent extends Component {
           </Button>}</Col>
           <Col span={16}>
             <Pagination
-            
+
               onChange={this.onChangeCurrnePage}
               className="pull-right"
               total={total}
               showSizeChanger
               showQuickJumper
               showTotal={total => `数据共${total}条`}
-              defaultCurrent={1}
             /></Col>
         </Row>
+        {/* 弹窗 */}
+        <Modal
+          title="提示"
+          visible={modalVisible}
+          onOk={this.modalThen}
+          onCancel={this.hideCancel}
+          confirmLoading={modalConfirmLoading}
+          okText="确认"
+          cancelText="取消"
+        >
+          <p className="text-center">
+            确定删除此信息？
+            <strong className="color-red">删除后将无法恢复。</strong>
+          </p>
+        </Modal>
       </Fragment>
 
     );
