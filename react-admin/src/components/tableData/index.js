@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 //验证propTypes
 import PropTypes from "prop-types"
 //antd 组件
-import { Table, Pagination, Row, Col, Button, message, Modal } from "antd";
+import { Form, Input, Table, Pagination, Row, Col, Button, message, Modal } from "antd";
 //api
 import {
   TableList,
@@ -20,7 +20,7 @@ class TableComponent extends Component {
       //数据
       data: [],
       dataList: [],
-      id:"",
+      id: "",
       //页码
       total: 0,
       //弹出层
@@ -28,7 +28,8 @@ class TableComponent extends Component {
       modalVisible: false,
       confirmLoading: false,
       //复选框
-      checkBoxValue: []
+      checkBoxValue: [],
+      keyWork: ""
     };
   }
   componentDidMount() {
@@ -41,7 +42,7 @@ class TableComponent extends Component {
   }
   //获取数据
   loadData = () => {
-    const { pageSize, pageNumber } = this.state;
+    const { pageSize, pageNumber, keyWork } = this.state;
     const requestData = {
       url: requestUrl[this.props.config.url],
       method: this.props.config.method,
@@ -51,7 +52,7 @@ class TableComponent extends Component {
       }
 
     }
-
+    if (keyWork) { requestData.data.name = keyWork }
     TableList(requestData)
       .then((response) => {
         const dataList = response.data.data; //数据
@@ -148,6 +149,20 @@ class TableComponent extends Component {
     });
   };
 
+  onFinish = (values) => {//搜索
+
+    if (!values.name) {
+      message.info("请输入查询部门名称!!");
+      return false;
+    }
+    this.setState({
+      keyWork: values.name,
+      pageSize: 10,
+      pageNumber: 1,
+    });
+    //请求数据
+    this.loadData();
+  };
   render() {
     let { data, dataList, tableLoading, total, modalConfirmLoading, modalVisible } = this.state;
     let { checkbox, rowkey } = this.props.config;
@@ -156,6 +171,16 @@ class TableComponent extends Component {
     };
     return (
       <Fragment>
+        <Form name="horizontal_login" layout="inline" onFinish={this.onFinish}  className="paddingB10">
+          <Form.Item label="部门名称" name="name">
+            <Input placeholder="请输入部门名称" />
+          </Form.Item>
+          <Form.Item shouldUpdate={true}>
+            <Button type="primary" htmlType="submit">
+              搜索
+            </Button>
+          </Form.Item>
+        </Form>
         {/* tabel组件 */}
         <Table
           pagination={false}
@@ -165,9 +190,10 @@ class TableComponent extends Component {
           columns={data.thead}
           dataSource={dataList}
           bordered
+          className="paddingB10"
         ></Table>
 
-        <Row>
+        <Row >
           <Col span={8}>  {this.props.batchButton && <Button type="primary" onClick={() => this.onHandlerDelete()}>
             批量删除
           </Button>}</Col>

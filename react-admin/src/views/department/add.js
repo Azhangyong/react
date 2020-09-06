@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { Form, Input, Button, InputNumber, Radio, message } from "antd";
 //api
 import { DepartmentAddApi, DepartmentDetailApi, DepartmentEditApi } from "@/api/department";
-
+//组件
+import FormCom from "@/components/form/index"
 class DepartmentAdd extends Component {
   constructor(props) {
     super(props);
@@ -12,7 +13,10 @@ class DepartmentAdd extends Component {
         wrapperCol: { span: 20 },
       },
       loading: false,
-      id: ""
+      id: "",
+      formItem: [
+        { type: "input", label: "部门名称", name: "name", required: true }
+      ]
     };
   }
   componentWillMount() {
@@ -89,12 +93,14 @@ class DepartmentAdd extends Component {
   render() {
     let { formLayout } = this.state;
     return (
+
       <Form
         ref="form"
         onFinish={this.onSubmit}
         initialValues={{ status: true, number: 0 }} //设置默认值
         {...formLayout}
       >
+        <FormCom fromItem={this.state.formItem} />
         <Form.Item label="部门名称" name="name">
           <Input />
         </Form.Item>

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 //antd 组件
-import { Form, Input, Button, message, Switch } from "antd";
+import { Button, message, Switch } from "antd";
 //api
 import {
   DepartmentStatusApi,
@@ -116,22 +116,6 @@ class DepartmentList extends Component {
   };
 
 
-  onFinish = (values) => {
-    if (this.state.tableLoading) {
-      return false;
-    }
-    if (!values.name) {
-      message.info("请输入查询部门名称!!");
-      return false;
-    }
-    this.setState({
-      keyWork: values.name,
-      pageSize: 10,
-      pageNumber: 1,
-    });
-    //请求数据
-    this.loadData();
-  };
 
   onCheckBox = (rowKeys, rows) => {
     this.setState({
@@ -145,16 +129,7 @@ class DepartmentList extends Component {
   render() {
     return (
       <Fragment>
-        <Form name="horizontal_login" layout="inline" onFinish={this.onFinish}>
-          <Form.Item label="部门名称" name="name">
-            <Input placeholder="请输入部门名称" />
-          </Form.Item>
-          <Form.Item shouldUpdate={true}>
-            <Button type="primary" htmlType="submit">
-              搜索
-            </Button>
-          </Form.Item>
-        </Form>
+     
         <div className="table-wrap">
           <TableComponent onRef={this.getChildren} batchButton={true} config={this.state.tableConfig} />
         </div>
