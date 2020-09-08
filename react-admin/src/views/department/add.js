@@ -15,7 +15,11 @@ class DepartmentAdd extends Component {
       loading: false,
       id: "",
       formItem: [
-        { type: "input", label: "部门名称", name: "name", required: true }
+        { type: "input", label: "部门名称", name: "name", required: true },
+        { type: "Select", label: "部门名称a", name: "namea", required: true,options:[
+          {label:"研发部",value:"a"},
+          {label:"行政部",value:"b"},
+        ] }
       ]
     };
   }
