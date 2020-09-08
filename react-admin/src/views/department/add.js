@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Form, Input, Button, InputNumber, Radio, message } from "antd";
 //api
 import { DepartmentAddApi, DepartmentDetailApi, DepartmentEditApi } from "@/api/department";
@@ -15,11 +15,40 @@ class DepartmentAdd extends Component {
       loading: false,
       id: "",
       formItem: [
-        { type: "input", label: "部门名称", name: "name", required: true },
-        { type: "Select", label: "部门名称a", name: "namea", required: true,options:[
-          {label:"研发部",value:"a"},
-          {label:"行政部",value:"b"},
-        ] }
+        {
+          type: "Input",
+          label: "部门名称",
+          name: "name", required: true,
+          style: { width: "200px" },
+          placeholder: "请输入部门名称"
+        },
+        {
+          type: "InputNumber",
+          label: "人员数量",
+          name: "number", required: true,
+          style: { width: "200px" },
+          placeholder: "请输入人员数量",
+          min: 0, max: 100
+        },
+        {
+          type: "Radio",
+          label: "禁启用",
+          name: "status", required: true,
+          options: [
+            { label: "禁用", value: false },
+            { label: "启用", value: true },
+          ]
+
+        },
+        {
+          type: "Select", label: "部门名称a", name: "namea", required: true, options: [
+            { label: "研发部", value: "a" },
+            { label: "行政部", value: "b" },
+          ],
+          style: {
+            width: "150px"
+          }, placeholder: "请选择部门"
+        }
       ]
     };
   }
@@ -97,36 +126,39 @@ class DepartmentAdd extends Component {
   render() {
     let { formLayout } = this.state;
     return (
+      <Fragment>
+          <FormCom fromItem={this.state.formItem} formLayout={formLayout} onSubmit={this.onSubmit}/>
+        <Form
+          ref="form"
+          onFinish={this.onSubmit}
+          initialValues={{ status: true, number: 0 }} //设置默认值
+          {...formLayout}
+        >
+        
+          <Form.Item label="部门名称" name="name">
+            <Input />
+          </Form.Item>
+          <Form.Item label="人员数量" name="number">
+            <InputNumber max={100} min={0} />
 
-      <Form
-        ref="form"
-        onFinish={this.onSubmit}
-        initialValues={{ status: true, number: 0 }} //设置默认值
-        {...formLayout}
-      >
-        <FormCom fromItem={this.state.formItem} />
-        <Form.Item label="部门名称" name="name">
-          <Input />
-        </Form.Item>
-        <Form.Item label="人员数量" name="number">
-          <InputNumber max={100} min={0} />
-          {/* //defaultValue={value} 保错现无法解决*/}
-        </Form.Item>
-        <Form.Item label="禁启用" name="status">
-          <Radio.Group>
-            <Radio value={false}>禁用</Radio>
-            <Radio value={true}>启用</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="描述" name="content">
-          <Input.TextArea />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" loading={this.state.loading} htmlType="submit">
-            确定
+          </Form.Item>
+          <Form.Item label="禁启用" name="status">
+            <Radio.Group>
+              <Radio value={false}>禁用</Radio>
+              <Radio value={true}>启用</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="描述" name="content">
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" loading={this.state.loading} htmlType="submit">
+              确定
           </Button>
-        </Form.Item>
-      </Form>
+          </Form.Item>
+        </Form>
+      </Fragment>
+
     );
   }
 }
