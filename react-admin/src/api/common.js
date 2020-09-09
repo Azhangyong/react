@@ -1,21 +1,31 @@
-import service from "../utils/request"
+import service from "../utils/request";
 /**
  * table 列表
  */
 export function TableList(params) {
-    return service.request({
-        url: params.url,
-        method: params.method || "post",
-        data: params.data,
-        // params:data//type 为get
-    })
+  return service.request({
+    url: params.url,
+    method: params.method || "post",
+    data: params.data,
+    // params:data//type 为get
+  });
 }
 //删除列表
 export function TableDelete(params) {
-    return service.request({
-        url: params.url,
-        method: params.method || "post",
-        data: params.data,
-      // params:data//type 为get
-    });
-  }
+  return service.request({
+    url: params.url,
+    method: params.method || "post",
+    data: params.data,
+    // params:data//type 为get
+  });
+}
+//公用api
+export function requestData(params) {
+  console.log(params)
+  return service.request({
+    url: params.url,
+    method: params.method || "post",
+    data: params.data,
+    // params:data//type 为get
+  });
+}

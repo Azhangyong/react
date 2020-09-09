@@ -1,5 +1,9 @@
 const requestUrl = {
-    "departmentList": "/department/list/",
-    "departmentListDelete": "/department/delete/"
-}
-export default requestUrl
+  //Table api
+  departmentList: "/department/list/",
+  departmentListDelete: "/department/delete/",
+  //Form Api
+  departmentAdd: "/department/add/",
+  departmentEdit: "/department/edit/",
+};
+export default requestUrl;
