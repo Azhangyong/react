@@ -10,6 +10,7 @@ import {
 } from "@/api/common";
 
 import requestUrl from "@/api/requestUrl"
+import FormSearch from "../formSearch/index.js"
 class TableComponent extends Component {
   constructor(props) {
     super(props);
@@ -165,22 +166,14 @@ class TableComponent extends Component {
   };
   render() {
     let { data, dataList, tableLoading, total, modalConfirmLoading, modalVisible } = this.state;
-    let { checkbox, rowkey } = this.props.config;
+    let { checkbox, rowkey ,formItem} = this.props.config;
+
     const rowSelection = {
       onChange: this.onCheckBox,
     };
     return (
       <Fragment>
-        <Form name="horizontal_login" layout="inline" onFinish={this.onFinish}  className="paddingB10">
-          <Form.Item label="部门名称" name="name">
-            <Input placeholder="请输入部门名称" />
-          </Form.Item>
-          <Form.Item shouldUpdate={true}>
-            <Button type="primary" htmlType="submit">
-              搜索
-            </Button>
-          </Form.Item>
-        </Form>
+        <FormSearch fromItem={formItem} />
         {/* tabel组件 */}
         <Table
           pagination={false}

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form, Input, Button, message, Select, InputNumber, Radio } from "antd";
-
+//验证propTypes
+import PropTypes from "prop-types"
 //api
 import { requestData } from "@/api/common.js";
 //url
@@ -102,7 +103,7 @@ class FormCom extends Component {
           {item.options &&
             item.options.map((item) => {
               return (
-                <Option valeu={item.value} key={item.value}>
+                <Option value={item.value} key={item.value}>
                   {item.label}
                 </Option>
               );
@@ -176,5 +177,12 @@ class FormCom extends Component {
       </Form>
     );
   }
+}
+FormCom.propTypes = {
+  fromConfig: PropTypes.object
+}
+//定义默认值
+FormCom.defaultProps = {
+  fromConfig: {}
 }
 export default FormCom;

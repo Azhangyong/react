@@ -70,7 +70,7 @@ class DepartmentList extends Component {
                     </Link>
                   </Button>
                   <Button
-               onClick={() => this.onHandlerDelete(record.id)}
+                    onClick={() => this.onHandlerDelete(record.id)}
                   >
                     删除
                   </Button>
@@ -84,6 +84,23 @@ class DepartmentList extends Component {
             },
           },
         ],
+        formItem: [{
+          type: "Input",
+          label: "部门名称",
+          name: "name",
+          placeholder: "请输入部门名称",
+        },
+
+        {
+          type: "Select",
+          label: "禁启用",
+          name: "status",
+          style: { width: "100px" },
+          options: [
+            { label: "禁用", value: false },
+            { label: "启用", value: true },
+          ],
+        },]
       }
     };
   }
@@ -123,13 +140,13 @@ class DepartmentList extends Component {
     });
   };
   //删除
-  onHandlerDelete=(id)=>{
+  onHandlerDelete = (id) => {
     this.TableComponent.onHandlerDelete(id)
   }
   render() {
     return (
       <Fragment>
-     
+
         <div className="table-wrap">
           <TableComponent onRef={this.getChildren} batchButton={true} config={this.state.tableConfig} />
         </div>
