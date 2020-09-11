@@ -1,16 +1,21 @@
 import React, { Component, Fragment } from "react";
 //验证propTypes
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 //antd 组件
-import { Form, Input, Table, Pagination, Row, Col, Button, message, Modal } from "antd";
-//api
 import {
-  TableList,
-  TableDelete
-} from "@/api/common";
+  Table,
+  Pagination,
+  Row,
+  Col,
+  Button,
+  message,
+  Modal,
+} from "antd";
+//api
+import { TableList, TableDelete } from "@/api/common";
 
-import requestUrl from "@/api/requestUrl"
-import FormSearch from "../formSearch/index.js"
+import requestUrl from "@/api/requestUrl";
+import FormSearch from "../formSearch/index.js";
 class TableComponent extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +35,7 @@ class TableComponent extends Component {
       confirmLoading: false,
       //复选框
       checkBoxValue: [],
-      keyWork: ""
+      searchData: {},
     };
   }
   componentDidMount() {
@@ -39,21 +44,28 @@ class TableComponent extends Component {
     });
     this.loadData();
     //返回子组件实例
-    this.props.onRef(this)
+    this.props.onRef(this);
   }
   //获取数据
   loadData = () => {
-    const { pageSize, pageNumber, keyWork } = this.state;
+    const { pageSize, pageNumber, searchData } = this.state;
     const requestData = {
       url: requestUrl[this.props.config.url],
       method: this.props.config.method,
       data: {
         pageSize: pageSize,
         pageNumber: pageNumber,
+      },
+    };
+    if (Object.keys(searchData).length !== 0) {
+      //两种方法
+      for (let key in searchData) {
+        requestData.data[key] = searchData[key];
       }
-
     }
-    if (keyWork) { requestData.data.name = keyWork }
+    // if(JSON.stringify(searchData)!=="{}"){
+
+    // }
     TableList(requestData)
       .then((response) => {
         const dataList = response.data.data; //数据
@@ -61,7 +73,7 @@ class TableComponent extends Component {
           //返回一个null
           this.setState({
             dataList: dataList.data,
-            total: dataList.total
+            total: dataList.total,
           });
         }
         this.setState({
@@ -69,7 +81,6 @@ class TableComponent extends Component {
         });
       })
       .catch((error) => {
-
         this.setState({
           tableLoading: false,
         });
@@ -78,28 +89,32 @@ class TableComponent extends Component {
   /**复选框 */
   onCheckBox = (value) => {
     this.setState({
-      checkBoxValue: value
-    })
-  }
+      checkBoxValue: value,
+    });
+  };
   /**分页页码 */
   onChangeCurrnePage = (value, pageSize) => {
-
-    this.setState({
-      pageNumber: value === 0 ? 1 : value,
-      pageSize: pageSize
-    }, () => {
-      this.loadData()
-    })
-
-  }
+    this.setState(
+      {
+        pageNumber: value === 0 ? 1 : value,
+        pageSize: pageSize,
+      },
+      () => {
+        this.loadData();
+      }
+    );
+  };
   //一次请求条数
   onChangeSizePage(value, page) {
-    this.setState({
-      pageNumber: 1,
-      pageSize: page
-    }, () => {
-      this.loadData()
-    })
+    this.setState(
+      {
+        pageNumber: 1,
+        pageSize: page,
+      },
+      () => {
+        this.loadData();
+      }
+    );
   }
   hideCancel = () => {
     this.setState({
@@ -110,10 +125,10 @@ class TableComponent extends Component {
   onHandlerDelete(id) {
     //判断是否选中数据
     if (this.state.checkBoxValue.length === 0) {
-      message.info("请选择需要删除的数据")
-      return
+      message.info("请选择需要删除的数据");
+      return;
     }
-    id = this.state.checkBoxValue.join()
+    id = this.state.checkBoxValue.join();
     this.setState({
       modalVisible: true,
       id,
@@ -121,17 +136,15 @@ class TableComponent extends Component {
   }
   //确认删除
   modalThen = () => {
-
     this.setState({
       confirmLoading: true,
     });
     const requestData = {
       url: requestUrl[`${this.props.config.url}Delete`],
       data: {
-        id: this.state.id
-      }
-
-    }
+        id: this.state.id,
+      },
+    };
     TableDelete(requestData).then((response) => {
       message.info(response.data.message);
       //请求数据
@@ -150,7 +163,8 @@ class TableComponent extends Component {
     });
   };
 
-  onFinish = (values) => {//搜索
+  onFinish = (values) => {
+    //搜索
 
     if (!values.name) {
       message.info("请输入查询部门名称!!");
@@ -164,16 +178,35 @@ class TableComponent extends Component {
     //请求数据
     this.loadData();
   };
+  search = (searchData) => {
+    this.setState(
+      {
+        pageNumber: 1,
+        pageSize: 10,
+        searchData,
+      },
+      () => {
+        this.loadData();
+      }
+    );
+  };
   render() {
-    let { data, dataList, tableLoading, total, modalConfirmLoading, modalVisible } = this.state;
-    let { checkbox, rowkey ,formItem} = this.props.config;
+    let {
+      data,
+      dataList,
+      tableLoading,
+      total,
+      modalConfirmLoading,
+      modalVisible,
+    } = this.state;
+    let { checkbox, rowkey, formItem } = this.props.config;
 
     const rowSelection = {
       onChange: this.onCheckBox,
     };
     return (
       <Fragment>
-        <FormSearch fromItem={formItem} />
+        <FormSearch fromItem={formItem} search={this.search} />
         {/* tabel组件 */}
         <Table
           pagination={false}
@@ -186,20 +219,25 @@ class TableComponent extends Component {
           className="paddingB10"
         ></Table>
 
-        <Row >
-          <Col span={8}>  {this.props.batchButton && <Button type="primary" onClick={() => this.onHandlerDelete()}>
-            批量删除
-          </Button>}</Col>
+        <Row>
+          <Col span={8}>
+            {" "}
+            {this.props.batchButton && (
+              <Button type="primary" onClick={() => this.onHandlerDelete()}>
+                批量删除
+              </Button>
+            )}
+          </Col>
           <Col span={16}>
             <Pagination
-
               onChange={this.onChangeCurrnePage}
               className="pull-right"
               total={total}
               showSizeChanger
               showQuickJumper
-              showTotal={total => `数据共${total}条`}
-            /></Col>
+              showTotal={(total) => `数据共${total}条`}
+            />
+          </Col>
         </Row>
         {/* 弹窗 */}
         <Modal
@@ -217,15 +255,14 @@ class TableComponent extends Component {
           </p>
         </Modal>
       </Fragment>
-
     );
   }
 }
 TableComponent.propTypes = {
-  config: PropTypes.object
-}
+  config: PropTypes.object,
+};
 //定义默认值
 TableComponent.defaultProps = {
-  batchButton: false
-}
+  batchButton: false,
+};
 export default TableComponent;

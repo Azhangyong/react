@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 //antd 组件
 import { Button, message, Switch } from "antd";
 //api
-import {
-  DepartmentStatusApi,
-} from "../../api/department";
+import { DepartmentStatusApi } from "../../api/department";
 //table 组件
 import TableComponent from "@/components/tableData/index";
 class DepartmentList extends Component {
@@ -69,9 +67,7 @@ class DepartmentList extends Component {
                       编辑
                     </Link>
                   </Button>
-                  <Button
-                    onClick={() => this.onHandlerDelete(record.id)}
-                  >
+                  <Button onClick={() => this.onHandlerDelete(record.id)}>
                     删除
                   </Button>
                   {/* 在父组件获取子组件的实例
@@ -84,30 +80,30 @@ class DepartmentList extends Component {
             },
           },
         ],
-        formItem: [{
-          type: "Input",
-          label: "部门名称",
-          name: "name",
-          placeholder: "请输入部门名称",
-        },
+        formItem: [
+          {
+            type: "Input",
+            label: "部门名称",
+            name: "name",
+            placeholder: "请输入部门名称",
+          },
 
-        {
-          type: "Select",
-          label: "禁启用",
-          name: "status",
-          style: { width: "100px" },
-          options: [
-            { label: "禁用", value: false },
-            { label: "启用", value: true },
-          ],
-        },]
-      }
+          {
+            type: "Select",
+            label: "禁启用",
+            name: "status",
+            placeholder: "请输入",
+            style: { width: "100px" },
+            option: "status",
+          },
+        ],
+      },
     };
   }
   //获取子组件
   getChildren = (ref) => {
-    this.TableComponent = ref//存储子组件
-  }
+    this.TableComponent = ref; //存储子组件
+  };
   //禁启用按钮
   switchChange = (id, statusx) => {
     if (!id) {
@@ -132,8 +128,6 @@ class DepartmentList extends Component {
       });
   };
 
-
-
   onCheckBox = (rowKeys, rows) => {
     this.setState({
       rowKeys,
@@ -141,16 +135,18 @@ class DepartmentList extends Component {
   };
   //删除
   onHandlerDelete = (id) => {
-    this.TableComponent.onHandlerDelete(id)
-  }
+    this.TableComponent.onHandlerDelete(id);
+  };
   render() {
     return (
       <Fragment>
-
         <div className="table-wrap">
-          <TableComponent onRef={this.getChildren} batchButton={true} config={this.state.tableConfig} />
+          <TableComponent
+            onRef={this.getChildren}
+            batchButton={true}
+            config={this.state.tableConfig}
+          />
         </div>
-
       </Fragment>
     );
   }

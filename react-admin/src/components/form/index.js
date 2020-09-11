@@ -46,7 +46,7 @@ class FormCom extends Component {
       return false;
     }
     const FromList = [];
-    fromItem.map((item) => {
+    fromItem.forEach((item) => {
       if (item.type === "Input") {
         FromList.push(this.inputElem(item));
       } else if (item.type === "Select") {
