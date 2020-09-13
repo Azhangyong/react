@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Form, Input, Button,  Select, InputNumber, Radio } from "antd";
+import { Form, Input, Button, Select, InputNumber, Radio } from "antd";
 //验证propTypes
 import PropTypes from "prop-types";
 
-//globel
-import globel from "@/js/global";
+//store
+import Store from "@/store/index";
 const { Option } = Select;
 // import FormList from "antd/lib/form/FormList";
 class formSearch extends Component {
@@ -42,7 +42,7 @@ class formSearch extends Component {
       if (item.type === "Input") {
         FromList.push(this.inputElem(item));
       } else if (item.type === "Select") {
-        item.options = globel[item.option];
+        item.options = Store.getState().config[item.option];
         FromList.push(this.SelectElem(item));
       } else if (item.type === "InputNumber") {
         FromList.push(this.InputNumberElem(item));
