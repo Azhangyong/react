@@ -6,7 +6,6 @@ import { Button, message, Switch } from "antd";
 import { DepartmentStatusApi } from "../../api/department";
 //table 组件
 import TableComponent from "@/components/tableData/index";
-import FromSearch from "@/components/formSearch/index"
 class DepartmentList extends Component {
   constructor() {
     super();
@@ -18,24 +17,6 @@ class DepartmentList extends Component {
       //表数据
       data: [],
       selectId: "",
-      //筛选条件
-      formItem: [
-        {
-          type: "Input",
-          label: "部门名称",
-          name: "name",
-          placeholder: "请输入部门名称",
-        },
-
-        {
-          type: "Select",
-          label: "禁启用",
-          name: "status",
-          placeholder: "请输入",
-          style: { width: "100px" },
-          option: "status",
-        },
-      ],
       tableConfig: {
         url: "departmentList",
         checkbox: true,
@@ -106,7 +87,7 @@ class DepartmentList extends Component {
             name: "name",
             placeholder: "请输入部门名称",
           },
-  
+
           {
             type: "Select",
             label: "禁启用",
@@ -160,7 +141,6 @@ class DepartmentList extends Component {
     return (
       <Fragment>
         <div className="table-wrap">
-          <FromSearch  formItem={this.state.formItem}/>
           <TableComponent
             onRef={this.getChildren}
             batchButton={true}

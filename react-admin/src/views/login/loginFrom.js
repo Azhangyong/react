@@ -10,8 +10,12 @@ import { Login } from "../../api/account.js";
 import Code from "../../components/code/index";
 //密码加密
 import CryptoJs from "crypto-js";
+import { connect } from "react-redux"
+import { bindActionCreators } from "redux"
+
+import { setToken, setUsername } from "@/store/action/app"
 //方法
-import { setToken, setUsername } from "../../utils/cookes";
+// import { setToken, setUsername } from "../../utils/cookes";
 class LoginFrom extends Component {
   constructor() {
     super();
@@ -34,13 +38,16 @@ class LoginFrom extends Component {
     this.setState({
       loading: true,
     });
+    console.log(requestData)
     Login(requestData)
       .then((response) => {
         this.setState({
           loading: false,
         });
-        setToken(response.data.data.token); //存token
-        setUsername(response.data.data.username); //存名字
+        this.props.actions.setToken(response.data.data)
+        this.props.actions.setUsername(response.data.data.username)
+        // setToken(response.data.data.token); //存token
+        // setUsername(response.data.data.username); //存名字
         //路由跳转
         this.props.history.push("./index");
       })
@@ -202,5 +209,15 @@ class LoginFrom extends Component {
     );
   }
 }
-
-export default withRouter(LoginFrom);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators({
+      setToken: setToken,
+      setUsername: setUsername
+      // 传回的数据
+    }, dispatch)
+  }
+}
+export default connect(
+  mapDispatchToProps
+)(withRouter(LoginFrom));

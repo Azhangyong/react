@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import { Form, Input, Button, Select, InputNumber, Radio } from "antd";
 //验证propTypes
 import PropTypes from "prop-types";
-
-//store
-import Store from "@/store/index";
+import { connect } from "react-redux"
+import {bindActionCreators} from "redux"
 const { Option } = Select;
 // import FormList from "antd/lib/form/FormList";
 class formSearch extends Component {
@@ -38,11 +37,12 @@ class formSearch extends Component {
       return false;
     }
     const FromList = [];
+    console.log(this.props.configs)
     fromItem.forEach((item) => {
       if (item.type === "Input") {
         FromList.push(this.inputElem(item));
       } else if (item.type === "Select") {
-        item.options = Store.getState().config[item.option];
+        item.options = this.props.configs[item.option];
         FromList.push(this.SelectElem(item));
       } else if (item.type === "InputNumber") {
         FromList.push(this.InputNumberElem(item));
@@ -189,4 +189,23 @@ formSearch.propTypes = {
 formSearch.defaultProps = {
   fromConfig: {},
 };
-export default formSearch;
+
+const mapStateToProps = (state) => {
+  return {
+    configs: state.config
+  }
+
+}
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    search: () => {
+      dispatch({
+        type: "aaa"
+      })
+    }
+  }
+}
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(formSearch);
