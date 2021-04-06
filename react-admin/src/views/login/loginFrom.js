@@ -44,7 +44,8 @@ class LoginFrom extends Component {
         this.setState({
           loading: false,
         });
-        this.props.actions.setToken(response.data.data)
+        console.log(123)
+        // this.props.actions.setToken(response.data.data)
         this.props.actions.setUsername(response.data.data.username)
         // setToken(response.data.data.token); //存token
         // setUsername(response.data.data.username); //存名字
@@ -210,9 +211,10 @@ class LoginFrom extends Component {
   }
 }
 const mapDispatchToProps = (dispatch) => {
+  console.log(dispatch)
   return {
     actions: bindActionCreators({
-      setToken: setToken,
+      // setToken: setToken,//第一个是传过去的函数名字 第二个为this.props.actions.setToken(response.data.data)
       setUsername: setUsername
       // 传回的数据
     }, dispatch)

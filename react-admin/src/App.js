@@ -6,7 +6,7 @@ import Index from "./views/index/index.js";
 //私有组件
 import PrivateRouter from "./components/privateRouter/index";
 //Provider
-import { Provider } from "react-redux"
+import { Provider } from "react-redux";
 //store
 import Store from "@/store/index";
 class App extends React.Component {
@@ -19,8 +19,7 @@ class App extends React.Component {
       <Provider store={Store}>
         <BrowserRouter>
           <Switch>
-            <Route exact render={() => <Login />} path="/">
-            </Route>
+            <Route exact render={() => <Login />} path="/"></Route>
             <PrivateRouter component={Index} path="/index" />
           </Switch>
         </BrowserRouter>
